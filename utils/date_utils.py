@@ -2,7 +2,9 @@ import jdatetime
 from datetime import datetime
 
 
-def jalali_to_gregorian(jalali_date: str) -> datetime:
+def jalali_to_gregorian(jalali_date: str = None) -> datetime | None:
+    if jalali_date is None:
+        return None
     year, month, day = map(int, jalali_date.split("-"))
     return jdatetime.date(year, month, day).togregorian()
 
