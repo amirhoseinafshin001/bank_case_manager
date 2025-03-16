@@ -1,6 +1,7 @@
 from enum import Enum
 from typing import List
 from datetime import datetime
+from datetime import UTC
 from uuid import uuid4
 
 from sqlalchemy.orm import DeclarativeBase
@@ -64,7 +65,7 @@ class Case(Base):
     ) # متقاضی
     entry_date: Mapped[datetime] = mapped_column(
         DateTime,
-        default=datetime.utcnow
+        default=datetime.now(UTC)
     ) # تاریخ ورود
     branch: Mapped[str] = mapped_column(
         String(4)
@@ -87,8 +88,6 @@ class Case(Base):
         lazy="selectin"
     ) # ارجاع ها
 
-    def __init__(self, **kwargs):
-        super.__init__(**kwargs)
     def __repr__(self):
         return f"<case {self.tracking_number}>"
 
@@ -97,12 +96,13 @@ class Referral(Base):
     __tablename__ = "referrals"
     id: Mapped[str] = mapped_column(
         String(36),
+        default=lambda: str(uuid4()),
         primary_key=True,
         unique=True
     ) # شماره (مربوط به ساز و کار برنامه)
     entry_date: Mapped[datetime] = mapped_column(
         DateTime,
-        default=datetime.utcnow
+        default=datetime.now(UTC)
     ) # تاریخ ارجاع
     exit_date: Mapped[datetime] = mapped_column(
         DateTime,
@@ -121,8 +121,5 @@ class Referral(Base):
         back_populates="referral_list"
     ) # پرونده
 
-    def __init__(self, **kwargs):
-        kwargs.setdefault("id", str(uuid4()))
-        super().__init__(**kwargs)
     def __repr__(self):
         return f"<ref {self.id[:4]}, {self.case.tracking_number}>"

@@ -29,11 +29,12 @@ def create_case(
                 branch = branch,
                 region = RegionCode(region),
                 case_type = CaseType(case_type),
-                amount=  (amount // 10000000),
+                amount=  (amount // 10_000_000),
                 collateral = CollateralType(collateral)
             )
             session.add(case)
             session.commit()
+            session.refresh(case)
         return case.tracking_number
     except Exception as e:
         logger.error(f"Error case_service.creat_case: {e}")

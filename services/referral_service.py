@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import UTC
 from typing import List
 
 from db.database import Session
@@ -25,6 +26,7 @@ def create_referral(
             )
             session.add(ref)
             session.commit()
+            session.refresh(ref)
         return True
     except Exception as e:
         logger.error(f"Error referral_service.creat_referral: {e}")
@@ -47,7 +49,7 @@ def end_referral(
         case_id: int,
         jalali_end_date: str = None
     ) -> bool:
-    end_date = jalali_to_gregorian(jalali_end_date) if jalali_end_date else datetime.utcnow()
+    end_date = jalali_to_gregorian(jalali_end_date) if jalali_end_date else datetime.now(UTC)
     try:
         with Session() as session:
             session.query(Referral).filter(
