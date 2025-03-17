@@ -13,10 +13,10 @@ def create_referral(
         case_id: int, # tracking_number
         operator: str,
         operation_type: str,
-        date_jalali: str = None,
+        start_date: str = None,
     ) -> bool:
     try:
-        date = jalali_to_gregorian(date_jalali)
+        date = jalali_to_gregorian(start_date)
         with Session() as session:
             ref = Referral(
                 entry_date = date,
@@ -63,3 +63,14 @@ def end_referral(
     except Exception as e:
         logger.error(f"Error referral_service.end_referral: {e}")
         return False
+
+
+def get_case_referrals(case_id: int) -> List[Referral]:
+    try:
+        with Session() as session:
+            return session.query(Referral).filter(
+                Referral.case_id == case_id
+            ).order_by(Referral.entry_date).all()
+    except Exception as e:
+        logger.error(f"Error referral_service.get_case_referrals: {e}")
+        return []

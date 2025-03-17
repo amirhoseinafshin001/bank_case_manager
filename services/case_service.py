@@ -1,4 +1,6 @@
 from typing import List
+from datetime import datetime
+from datetime import time
 
 from db.database import Session
 from db.models import Case
@@ -12,7 +14,7 @@ from utils.date_utils import jalali_to_gregorian
 def create_case(
         national_id: str,
         applicant: str,
-        entry_date_jalali: str,
+        entry_date: str,
         branch: str,
         region: int,
         case_type: str,
@@ -20,7 +22,7 @@ def create_case(
         collateral: str
     ) -> int | None:
     try:
-        entry_date = jalali_to_gregorian(entry_date_jalali)
+        entry_date = jalali_to_gregorian(entry_date)
         with Session() as session:
             case = Case(
                 national_id = national_id,
@@ -74,8 +76,21 @@ def filter_cases(**filters) -> List[Case]:
                 start_jalali, end_jalali = filters["date_range"]
                 start = jalali_to_gregorian(start_jalali)
                 end = jalali_to_gregorian(end_jalali)
+                start = datetime.combine(start, time.min)
+                end = datetime.combine(end, time.max)
                 cases = cases.filter(Case.entry_date.between(start, end))
             return cases.all()
     except Exception as e:
         logger.error(f"Error case_service.filter_cases: {e}")
         return []
+
+
+def update_case(case: Case) -> bool:
+    try:
+        with Session() as session:
+            session.merge(case)  # update the case (idk, gpt said that)
+            session.commit()
+        return True
+    except Exception as e:
+        logger.error(f"Error case_service.update_case: {e}")
+        return False

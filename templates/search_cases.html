@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}جست‌وجوی پرونده{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>جست‌وجوی پرونده‌ها</h2>
+    <form method="get" action="{{ url_for('main.search_cases') }}">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label for="national_id" class="form-label">کد ملی</label>
+                <input type="text" class="form-control" id="national_id" name="national_id">
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="applicant" class="form-label">نام متقاضی</label>
+                <input type="text" class="form-control" id="applicant" name="applicant">
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="branch" class="form-label">کد شعبه</label>
+                <input type="text" class="form-control" id="branch" name="branch">
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="region" class="form-label">منطقه</label>
+                <select class="form-control" id="region" name="region">
+                    <option value="">همه</option>
+                    <option value="1">۱</option>
+                    <option value="2">۲</option>
+                    <option value="3">۳</option>
+                    <option value="4">۴</option>
+                    <option value="5">۵</option>
+                    <option value="6">۶</option>
+                    <option value="7">۷</option>
+                    <option value="8">ممتاز</option>
+                </select>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="case_type" class="form-label">نوع پرونده</label>
+                <select class="form-control" id="case_type" name="case_type">
+                    <option value="">همه</option>
+                    <option value="FACILITY">تسهیلات</option>
+                    <option value="APPRAISAL">ارزیابی</option>
+                    <option value="REDEMPTION">فک رهن</option>
+                </select>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">جستجو</button>
+    </form>
+
+    {% if cases %}
+    <h3 class="mt-4">نتایج</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>شماره پرونده</th>
+                <th>نام متقاضی</th>
+                <th>شعبه</th>
+                <th>نوع پرونده</th>
+                <th>عملیات</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for case in cases %}
+            <tr>
+                <td><a href="{{ url_for('cases.case_detail', case_id=case.tracking_number) }}">{{ case.tracking_number }}</a></td>
+                <td>{{ case.applicant }}</td>
+                <td>{{ case.branch }}</td>
+                <td>{{ case.case_type }}</td>
+                <td>
+                    <a href="{{ url_for('cases.case_detail', case_id=case.tracking_number) }}" class="btn btn-sm btn-primary">مشاهده</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+</div>
+{% endblock %}

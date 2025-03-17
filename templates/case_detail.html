@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}جزئیات پرونده{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>پرونده {{ case.tracking_number }}</h2>
+
+    <!-- فرم ویرایش پرونده -->
+     <p>تاریخ شروع: {{ case.entry_date }}</p>
+    <form method="POST" class="mb-4" action="{{ url_for('cases.case_detail', case_id=case.tracking_number) }}">
+        <input type="hidden" name="edit_case">
+        <div class="row">
+            <div class="col-md-4">
+                <label>نام متقاضی</label>
+                <input type="text" name="applicant" class="form-control" value="{{ case.applicant }}">
+            </div>
+            <div class="col-md-4">
+                <label>شعبه</label>
+                <input type="text" name="branch" class="form-control" value="{{ case.branch }}">
+            </div>
+            <div class="col-md-4">
+                <label>منطقه</label>
+                <input type="text" name="region" class="form-control" value="{{ case.region }}">
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-md-4">
+                <label>نوع پرونده</label>
+                <input type="text" name="case_type" class="form-control" value="{{ case.case_type }}">
+            </div>
+            <div class="col-md-4">
+                <label>وثیقه</label>
+                <input type="text" name="collateral" class="form-control" value="{{ case.collateral }}">
+            </div>
+            <div class="col-md-4">
+                <label>مبلغ</label>
+                <input type="number" name="amount" class="form-control" value="{{ case.amount }}">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">بروزرسانی</button>
+    </form>
+
+    <!-- جدول ارجاعات -->
+    <h3>ارجاعات</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>تاریخ ورود</th>
+                <th>عملیات</th>
+                <th>اپراتور</th>
+                <th>تاریخ خروج</th>
+                <th>مدت (روز)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ref in case.referrals %}
+            <tr>
+                <td>{{ ref.entry_date }}</td>
+                <td>{{ ref.operation_type }}</td>
+                <td>{{ ref.operator }}</td>
+                <td>{{ ref.exit_date if ref.exit_date else "در جریان" }}</td>
+                <td>{{ ref.duration }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- فرم ثبت ارجاع جدید -->
+    <h3>ثبت ارجاع جدید</h3>
+    <form method="POST" action="{{ url_for('cases.create_case_referral', case_id=case.tracking_number) }}">
+        <input type="hidden" name="add_referral">
+        <div class="row">
+            <div class="col-md-4">
+                <label>اپراتور</label>
+                <input type="text" name="operator" class="form-control" required>
+            </div>
+            <div class="col-md-4">
+                <label>نوع عملیات</label>
+                <input type="text" name="operation_type" class="form-control" required>
+            </div>
+            <div class="col-md-4">
+                <label>تاریخ ورود</label>
+                <input type="text" name="start_date" class="form-control date-input" placeholder="مثلاً 1403-12-10" required>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-success mt-3">ثبت ارجاع</button>
+    </form>
+
+    <a href="{{ url_for('main.search_cases') }}" class="btn btn-secondary mt-3">جستجو در پرونده ها</a>
+</div>
+{% endblock %}

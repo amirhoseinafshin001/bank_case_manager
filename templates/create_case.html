@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}ایجاد پرونده جدید{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>ایجاد پرونده جدید</h2>
+    <form method="POST" action="{{ url_for('cases.create_case_view') }}">
+        <div class="mb-3">
+            <label for="national_id" class="form-label">کد ملی</label>
+            <input type="text" class="form-control" id="national_id" name="national_id" required>
+        </div>
+        <div class="mb-3">
+            <label for="applicant" class="form-label">نام متقاضی</label>
+            <input type="text" class="form-control" id="applicant" name="applicant" required>
+        </div>
+        <div class="mb-3">
+            <label for="entry_date" class="form-label">تاریخ ورود (شمسی)</label>
+            <input type="text" class="form-control date-input" id="entry_date" name="entry_date" placeholder="14xx-xx-xx" required>
+        </div>
+        <div class="mb-3">
+            <label for="branch" class="form-label">کد شعبه</label>
+            <input type="text" class="form-control" id="branch" name="branch" required>
+        </div>
+        <div class="mb-3">
+            <label for="region" class="form-label">منطقه</label>
+            <select class="form-control" id="region" name="region">
+                <option value=1>۱</option>
+                <option value=2>۲</option>
+                <option value=3>۳</option>
+                <option value=4>۴</option>
+                <option value=5>۵</option>
+                <option value=6>۶</option>
+                <option value=7>۷</option>
+                <option value=8>ممتاز</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="case_type" class="form-label">نوع پرونده</label>
+            <select class="form-control" id="case_type" name="case_type">
+                <option value="تسهیلات">تسهیلات</option>
+                <option value="ارزیابی">ارزیابی</option>
+                <option value="فک رهن">فک رهن</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="amount" class="form-label">مبلغ</label>
+            <input type="number" class="form-control" id="amount" name="amount" required>
+        </div>
+        <div class="mb-3">
+            <label for="collateral" class="form-label">نوع وثیقه</label>
+            <select class="form-control" id="collateral" name="collateral">
+                <option value="ملک">ملک</option>
+                <option value="چک">چک</option>
+                <option value="نقد">نقد</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-success">ثبت پرونده</button>
+    </form>
+</div>
+{% endblock %}
