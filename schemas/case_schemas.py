@@ -47,6 +47,7 @@ class CaseResponseSchema(BaseModel):
     amount: int
     collateral: str
     referrals: list[ReferralResponseSchema]
+    last_operator: str | None
 
     @field_serializer("entry_date")
     def convert_entry_date(self, value: date, _info) -> str:
@@ -58,10 +59,20 @@ class CaseResponseSchema(BaseModel):
         case_dict["region"] = case.region.value
         case_dict["case_type"] = case.case_type.value
         case_dict["collateral"] = case.collateral.value
+        case_dict["entry_date"] = gregorian_to_jalali(case.entry_date)
+        case_dict["amount"] = case.amount * 1_000_000
+        
+        last_referral = max(
+            case.referral_list,
+            key=lambda ref: ref.entry_date,
+            default=None
+        )
+        case_dict["last_operator"] = last_referral.operator if last_referral else None
+        
         case_dict["referrals"] = [
             ReferralResponseSchema.model_validate(ref) for ref in case.referral_list
         ]
-        case_dict["entry_date"] = gregorian_to_jalali(case.entry_date)
+        
         return super().model_validate(case_dict)
 
     class Config:

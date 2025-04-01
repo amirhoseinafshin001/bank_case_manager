@@ -20,7 +20,7 @@
                 <input type="text" class="form-control" id="branch" name="branch">
             </div>
             <div class="col-md-4 mb-3">
-                <label for="region" class="form-label">منطقه</label>
+                <label for="region" class="form-label">حوزه</label>
                 <select class="form-control" id="region" name="region">
                     <option value="">همه</option>
                     <option value="1">۱</option>
@@ -43,6 +43,26 @@
                 </select>
             </div>
         </div>
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label for="start_date" class="form-label">از تاریخ</label>
+                <input type="text" class="form-control date-input" id="start_date" name="start_date" placeholder="14xx-xx-xx">
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="end_date" class="form-label">تا تاریخ</label>
+                <input type="text" class="form-control date-input" id="end_date" name="end_date" placeholder="14xx-xx-xx">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label for="last_operator" class="form-label">آخرین اپراتور</label>
+                <input type="text" class="form-control" id="last_operator" name="last_operator">
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="last_operation_type" class="form-label">آخرین نوع ارجاع</label>
+                <input type="text" class="form-control" id="last_operation_type" name="last_operation_type">
+            </div>
+        </div>
         <button type="submit" class="btn btn-primary">جستجو</button>
     </form>
 
@@ -55,6 +75,7 @@
                 <th>نام متقاضی</th>
                 <th>شعبه</th>
                 <th>نوع پرونده</th>
+                <th>آخرین کاربر</th>
                 <th>عملیات</th>
             </tr>
         </thead>
@@ -65,6 +86,7 @@
                 <td>{{ case.applicant }}</td>
                 <td>{{ case.branch }}</td>
                 <td>{{ case.case_type }}</td>
+                <td>{{ case.last_operator if case.last_operator else "بدون ارجاع" }}</td>
                 <td>
                     <a href="{{ url_for('cases.case_detail', case_id=case.tracking_number) }}" class="btn btn-sm btn-primary">مشاهده</a>
                 </td>
@@ -72,6 +94,10 @@
             {% endfor %}
         </tbody>
     </table>
+    {% else %}
+        <h3>
+            پرونده ای یافت نشد
+        </h3>
     {% endif %}
 </div>
 {% endblock %}

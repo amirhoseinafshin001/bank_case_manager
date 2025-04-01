@@ -78,7 +78,7 @@ class Case(Base):
         SqlEnum(CaseType)
     ) # نوع درخواست
     amount: Mapped[int] = mapped_column(
-        Integer # divided by 10'000'000 IRR
+        Integer # divided by 1'000'000 IRR
     ) # مبلغ
     collateral: Mapped[CollateralType] = mapped_column(
         SqlEnum(CollateralType)

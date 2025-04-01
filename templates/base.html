@@ -58,6 +58,40 @@
                 $(this).val(val);
             });
         });
+
+
+        // Change Amount format
+        $(document).ready(function() {
+            $(".amount-input").on("input", function() {
+                let val = $(this).val().replace(/[^\d]/g, "");
+                
+                let formattedVal = "";
+                while (val.length > 3) {
+                    formattedVal = "'" + val.slice(-3) + formattedVal;
+                    val = val.slice(0, -3);
+                }
+                formattedVal = val + formattedVal;
+                
+                $(this).val(formattedVal);
+            });
+        });
+
+
+        // move to the next field with `Enter` key
+        $(document).ready(function() {
+            $('form input, form select').keydown(function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const inputs = $('form input, form select');
+                    const next = inputs.eq(inputs.index(this) + 1);
+                    if (next.length) {
+                        next.focus();
+                    } else {
+                        $('form').submit();
+                    }
+                }
+            });
+        });
     </script>
 </body>
 </html>

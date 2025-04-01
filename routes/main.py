@@ -18,4 +18,4 @@ def search_cases():
     filters = {key: value for key, value in request.args.items() if value}
     cases = filter_cases(**filters)
     cases_data = [CaseResponseSchema.model_validate(case) for case in cases]
-    return render_template("search_cases.html", cases=cases)
+    return render_template("search_cases.html", cases=cases_data)
