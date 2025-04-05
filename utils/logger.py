@@ -1,9 +1,11 @@
 import logging
+from config import Config
+
 
 
 logging.basicConfig(
-    filename="logs/app.log",
-    level=logging.INFO,  # فقط INFO و بالاتر ذخیره میشه
+    filename=f"{Config.LOGS_DIR}app.log",
+    level=logging.ERROR,
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 

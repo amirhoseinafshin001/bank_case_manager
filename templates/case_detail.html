@@ -47,10 +47,16 @@
         </div>
         <button type="submit" class="btn btn-primary mt-3">بروزرسانی</button>
     </form>
-    <form method="POST" action="{{ url_for('cases.close_last_referral', case_id=case.tracking_number) }}">
-        <input type="hidden" name="close_case">
-        <button type="submit" class="btn btn-danger mt-3">پایان پرونده</button>
-    </form>
+
+    <div class="d-inline-flex gap-2 mt-3">
+        <form method="GET" action="{{ url_for('cases.export_case_excel', tracking_number=case.tracking_number) }}" class="mb-0">
+            <button type="submit" class="btn btn-secondary">دانلود فایل اکسل</button>
+        </form>
+        <form method="POST" action="{{ url_for('cases.close_last_referral', case_id=case.tracking_number) }}" class="mb-0">
+            <input type="hidden" name="close_case">
+            <button type="submit" class="btn btn-danger">پایان ارجاع فعلی</button>
+        </form>
+    </div>
 
     <h3>ارجاعات</h3>
     <table class="table table-striped">

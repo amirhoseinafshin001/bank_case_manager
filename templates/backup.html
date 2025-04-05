@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}بکاپ ها{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center">مدیریت بکاپ‌های دیتابیس</h2>
+    <div class="text-center my-3">
+        <a class="btn btn-primary" href="{{ url_for('backup.create_backup') }}">📂 ایجاد بکاپ</a>
+    </div>
+    <h3 class="mt-4">لیست بکاپ‌ها</h3>
+    <table class="table table-striped mt-3">
+        <thead class="table-dark">
+            <tr>
+                <th>نام بکاپ</th>
+                <th>عملیات</th>
+            </tr>
+        </thead>
+        <tbody id="backupList">
+            {% for backup in backups %}
+            <tr>
+                <td>{{ backup }}</td>
+                <td>
+                    <a class="btn btn-success btn-sm" href="{{ url_for('backup.restore_backup', backup_file=backup) }}" onclick="return confirm('آیا مطمئن هستید؟')">🔄 بازیابی</a>
+                    <a class="btn btn-danger btn-sm" href="{{ url_for('backup.delete_backup', backup_file=backup) }}" onclick="return confirm('آیا مطمئن هستید؟')">❌ حذف</a> 
+                    <!-- <button class="btn btn-success btn-sm" onclick="restoreBackup('{{ backup }}')">🔄 بازیابی</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteBackup('{{ backup }}')">❌ حذف</button> -->
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

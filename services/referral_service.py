@@ -4,9 +4,9 @@ from typing import List
 
 from db.database import Session
 from db.models import Referral
-from db.models import Case
 from utils.date_utils import jalali_to_gregorian
 from utils.logger import logger
+
 
 
 def create_referral(

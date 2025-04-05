@@ -6,6 +6,7 @@ from flask import request
 from flask import redirect
 from flask import url_for
 from flask import flash
+from flask import send_file
 
 from services.case_service import get_case
 from services.case_service import create_case
@@ -19,6 +20,7 @@ from schemas.case_schemas import CaseResponseSchema
 from schemas.referral_schemas import ReferralCreateSchema
 from schemas import ValidationError
 from utils.logger import logger
+from utils.excel_utils import export_excel
 from utils.date_utils import gregorian_to_jalali
 
 
@@ -38,10 +40,10 @@ def create_case_view():
             tracking_number = create_case(**data.model_dump())
 
             if tracking_number:
-                flash("Case created successfully!", "success")
+                flash("پرونده با موفقیت ساخته شد!", "success")
                 return redirect(url_for("cases.case_detail", case_id=tracking_number, today=gregorian_to_jalali(datetime.now())))
             else:
-                flash("Failed to create case.", "error")
+                flash("خطا در ساخت پرونده.", "error")
         except Exception as e:
             logger.error(f"endpoint create_case_view: {e}")
             flash(f"Error: {e}", "error")
@@ -53,7 +55,7 @@ def create_case_view():
 def case_detail(case_id):
     case = get_case(case_id)
     if not case:
-        flash("Case not found", "error")
+        flash("پرونده یافت نشد", "error")
         return redirect(url_for("main.index"))
 
     if request.method == "POST":
@@ -62,10 +64,10 @@ def case_detail(case_id):
             success = update_case(case_id, **data.model_dump())
 
             if success:
-                flash("Case updated successfully!", "success")
+                flash("پرونده با موفقیت ویرایش شد!", "success")
                 return redirect(url_for("cases.case_detail", tracking_number=case_id, today=gregorian_to_jalali(datetime.now())))
             else:
-                flash("Failed to update case.", "error")
+                flash("ویرایش پرونده ناموفق بود.", "error")
         except Exception as e:
             logger.error(f"endpoint case_detail: {e}")
             flash(f"Error: {e}", "error")
@@ -116,3 +118,14 @@ def close_last_referral(case_id):
         return redirect(url_for('cases.case_detail', case_id=case_id, today=gregorian_to_jalali(datetime.now())))
     flash("خطایی رخ داده است", "danger")
     return redirect(url_for('cases.case_detail', case_id=case_id, today=gregorian_to_jalali(datetime.now())))
+
+
+@cases_bp.route("/export_case/<int:tracking_number>/excel")
+def export_case_excel(tracking_number):
+    output, filename = export_excel(tracking_number)
+    return send_file(
+        output,
+        as_attachment=True,
+        download_name=filename,
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )

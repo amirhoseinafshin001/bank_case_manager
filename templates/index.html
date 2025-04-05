@@ -8,6 +8,8 @@
     <div class="mt-4">
         <a href="{{ url_for('cases.create_case_view') }}" class="btn btn-primary">ایجاد پرونده جدید</a>
         <a href="{{ url_for('main.search_cases') }}" class="btn btn-secondary">جست‌وجوی پرونده‌ها</a>
+        <a href="{{ url_for('backup.backup_page') }}" class="btn btn-secondary">بکاپ</a>
+        <a href="{{ url_for('main.view_logs') }}" class="btn btn-secondary">لاگ</a>
     </div>
 </div>
 {% endblock %}

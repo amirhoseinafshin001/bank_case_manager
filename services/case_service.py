@@ -15,6 +15,7 @@ from utils.logger import logger
 from utils.date_utils import jalali_to_gregorian
 
 
+
 def create_case(
         national_id: str,
         applicant: str,
