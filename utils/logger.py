@@ -1,6 +1,11 @@
+import os
 import logging
 from config import Config
 
+
+    
+if not os.path.exists(Config.LOGS_DIR):
+    os.makedirs(Config.LOGS_DIR)
 
 
 logging.basicConfig(
