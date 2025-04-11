@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}پرونده یافت نشد - 404{% endblock %}
+
+{% block content %}
+<div class="text-center py-5">
+    <h1 class="display-1">۴۰۴</h1>
+    <h2 class="mb-4">پرونده مورد نظر یافت نشد!</h2>
+    <p class="lead">پرونده با شماره <span class="fw-bold">{{ case_id }}</span> در سیستم وجود ندارد.</p>
+    <p class="lead">لطفا با استفاده از فیلتر های صفحه جستجوی برنامه به دنبال پرونده مورد نظر بگردید.</p>
+    <div class="d-flex justify-content-center gap-3">
+        <a href="{{ url_for('main.index') }}" class="btn btn-primary">صفحه اصلی</a>
+        <a href="{{ url_for('main.search_cases') }}" class="btn btn-outline-secondary">جستجوی پرونده‌ها</a>
+    </div>
+</div>
+{% endblock %}

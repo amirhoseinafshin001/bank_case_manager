@@ -7,6 +7,7 @@ from flask import redirect
 from flask import url_for
 from flask import flash
 from flask import send_file
+from flask import abort
 
 from services.case_service import get_case
 from services.case_service import create_case
@@ -55,8 +56,7 @@ def create_case_view():
 def case_detail(case_id):
     case = get_case(case_id)
     if not case:
-        flash("پرونده یافت نشد", "error")
-        return redirect(url_for("main.index"))
+        abort(404)
 
     if request.method == "POST":
         try:
@@ -102,22 +102,27 @@ def create_case_referral(case_id):
         return redirect(url_for("cases.case_detail", case_id=case_id, today=gregorian_to_jalali(datetime.now())))
 
 
-@cases_bp.route("/case/<int:case_id>/close", methods=["POST"])
+@cases_bp.route("/case/<int:case_id>/close", methods=["GET", "POST"])
 def close_last_referral(case_id):
-    last_referral = get_case_referrals(case_id)[-1]
-    if not last_referral:
-        flash("هیچ ارجاعی برای این پرونده ثبت نشده است.", "warning")
-        return redirect(url_for('cases.case_detail', case_id=case_id, today=gregorian_to_jalali(datetime.now())))
+    try:
+        last_referral = get_case_referrals(case_id)[-1]
 
-    if last_referral.exit_date:
-        flash("آخرین ارجاع این پرونده قبلاً بسته شده است.", "info")
-        return redirect(url_for('cases.case_detail', case_id=case_id, today=gregorian_to_jalali(datetime.now())))
+        if not last_referral:
+            flash("هیچ ارجاعی برای این پرونده ثبت نشده است.", "warning")
+        elif last_referral.exit_date:
+            flash("آخرین ارجاع این پرونده قبلاً بسته شده است.", "info")
 
-    if end_referral(case_id):
-        flash("پرونده با موفقیت بسته شد.", "success")
+        elif end_referral(case_id):
+            flash("پرونده با موفقیت بسته شد.", "success")
+        else:
+            flash("خطایی رخ داده است", "danger")
+
+    except Exception as e:
+        logger.error(f"endpoint create_case_referral: {e}")
+        flash("خطایی رخ داده است", "danger")
+
+    finally:
         return redirect(url_for('cases.case_detail', case_id=case_id, today=gregorian_to_jalali(datetime.now())))
-    flash("خطایی رخ داده است", "danger")
-    return redirect(url_for('cases.case_detail', case_id=case_id, today=gregorian_to_jalali(datetime.now())))
 
 
 @cases_bp.route("/export_case/<int:tracking_number>/excel")

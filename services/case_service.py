@@ -11,6 +11,7 @@ from db.models import Referral
 from db.models import RegionCode
 from db.models import CaseType
 from db.models import CollateralType
+from db.models import OperationType
 from utils.logger import logger
 from utils.date_utils import jalali_to_gregorian
 
@@ -107,10 +108,14 @@ def filter_cases(**filters) -> List[Case]:
                     latest_ref.exit_date == None
                 )
             if "last_operation_type" in filters:
-                cases = cases.filter(
-                    latest_ref.operation_type == filters["last_operation_type"],
-                    latest_ref.exit_date == None
-                )
+                try:
+                    operation_type_enum = OperationType(filters["last_operation_type"])
+                    cases = cases.filter(
+                        latest_ref.operation_type == operation_type_enum,
+                        latest_ref.exit_date == None
+                    )
+                except ValueError as e:
+                    logger.warning(f"Invalid operation type value: {filters['last_operation_type']}")
 
             if not filters:
                 cases = (

@@ -2,6 +2,7 @@ import os
 import sys
 
 from flask import Flask
+from flask import render_template
 
 from config import Config
 from utils.logger import logger
@@ -36,5 +37,15 @@ def create_app():
     app.register_blueprint(main_bp)
     app.register_blueprint(backup_bp)
     app.register_blueprint(cases_bp, url_prefix="/cases")
+
+    @app.errorhandler(404)
+    def handle_404(e):
+        from flask import request
+        
+        if request.path.startswith('/cases/'):
+            case_id = request.path.split('/')[-1]
+            return render_template('case_404.html', case_id=case_id), 404
+        
+        return render_template('404.html'), 404
 
     return app

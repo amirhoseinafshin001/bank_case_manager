@@ -15,8 +15,8 @@ instance/
 *.sqlite3
 *.db
 
-# *.spec
-# dist/
+*.spec
+dist/
 build/
 
 .ipynb_checkpoints/
