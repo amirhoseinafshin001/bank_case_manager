@@ -8,6 +8,7 @@ from pydantic import field_serializer
 from db.models import CaseType
 from db.models import CollateralType
 from db.models import RegionCode
+from db.models import OperationType
 from db.models import Case
 from utils.date_utils import gregorian_to_jalali
 from schemas.referral_schemas import ReferralResponseSchema
@@ -48,6 +49,7 @@ class CaseResponseSchema(BaseModel):
     collateral: str
     referrals: list[ReferralResponseSchema]
     last_operator: str | None
+    is_completed: bool
 
     @field_serializer("entry_date")
     def convert_entry_date(self, value: date, _info) -> str:
@@ -69,6 +71,11 @@ class CaseResponseSchema(BaseModel):
         )
         case_dict["last_operator"] = last_referral.operator if last_referral else None
         
+        case_dict["is_completed"] = any(
+            ref.operation_type == OperationType.APPROVAL and ref.exit_date is not None
+            for ref in case.referral_list
+        )
+
         case_dict["referrals"] = [
             ReferralResponseSchema.model_validate(ref) for ref in case.referral_list
         ]

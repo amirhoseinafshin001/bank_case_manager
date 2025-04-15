@@ -3,6 +3,8 @@ from datetime import datetime
 from datetime import time
 
 from sqlalchemy import func
+from sqlalchemy import case
+from sqlalchemy import select
 from sqlalchemy.orm import aliased
 
 from db.database import Session
@@ -64,6 +66,9 @@ def filter_cases(**filters) -> List[Case]:
     try:
         with Session() as session:
             cases = session.query(Case)
+            
+            if "tracking_number" in filters:
+                cases = cases.filter(Case.tracking_number == filters["tracking_number"])
             if "national_id" in filters:
                 cases = cases.filter(Case.national_id == filters["national_id"])
             if "applicant" in filters:
@@ -86,9 +91,9 @@ def filter_cases(**filters) -> List[Case]:
                 start = datetime.combine(start, time.min)
                 end = datetime.combine(end, time.max)
                 cases = cases.filter(Case.entry_date.between(start, end))
-            
+
+            latest_ref = aliased(Referral)
             if "last_operator" in filters or "last_operation_type" in filters:
-                latest_ref = aliased(Referral)
                 subquery = (
                     session.query(
                         Referral.case_id, 
@@ -98,8 +103,8 @@ def filter_cases(**filters) -> List[Case]:
                     .subquery()
                 )
                 cases = cases.outerjoin(
-                    latest_ref, 
-                    (latest_ref.case_id == Case.tracking_number) & 
+                    latest_ref,
+                    (latest_ref.case_id == Case.tracking_number) &
                     (latest_ref.entry_date == subquery.c.latest_date)
                 ).outerjoin(subquery, subquery.c.case_id == Case.tracking_number)
             if "last_operator" in filters:
@@ -117,15 +122,25 @@ def filter_cases(**filters) -> List[Case]:
                 except ValueError as e:
                     logger.warning(f"Invalid operation type value: {filters['last_operation_type']}")
 
-            if not filters:
-                cases = (
-                    cases.outerjoin(Referral)
-                    .group_by(Case.tracking_number)
-                    .order_by(func.max(Referral.entry_date))
+            approval_exists_subquery = (
+                session.query(Referral.case_id)
+                .filter(
+                    Referral.operation_type == OperationType.APPROVAL,
+                    Referral.exit_date.isnot(None)
                 )
+                .subquery()
+            )
+
+            approval_done_case = case(
+                (Case.tracking_number.in_(select(approval_exists_subquery.c.case_id)), 1),
+                else_=0
+            ).label("has_approval_done")
+
+            cases = cases.outerjoin(Referral).group_by(Case.tracking_number).order_by(approval_done_case.asc(), func.max(Referral.entry_date).desc())
 
             return cases.all()
     except Exception as e:
+        print(e)
         logger.error(f"Error case_service.filter_cases: {e}")
         return []
 
