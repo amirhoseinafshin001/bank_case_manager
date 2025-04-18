@@ -82,17 +82,22 @@ def create_case_referral(case_id):
         data = request.form.to_dict()
         data["case_id"] = case_id
 
+        ended = end_referral(case_id, jalali_end_date=data["start_date"])
+        assert ended is True
+
         referral_data = ReferralCreateSchema.model_validate(data)
         referral = create_referral(**referral_data.model_dump())
         if referral:
             flash("ارجاع با موفقیت ثبت شد", "success")
         else:
-            print(0)
             raise Exception()
 
     except ValidationError as e:
         logger.error(f"endpoint create_case_referral: (ValidationError from schemas) {e}")
         flash("داده‌های ورودی نامعتبر است", "danger")
+
+    except AssertionError as e:
+        logger.error(f"endpoint create_case_referral: couldn't end last referral ({e})")
 
     except Exception as e:
         logger.error(f"endpoint create_case_referral: {e}")

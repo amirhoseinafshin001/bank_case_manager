@@ -39,6 +39,6 @@ if __name__ == "__main__":
             message=str(e)
         )
 
-    print(message=f"http://127.0.0.1:{selected_port}")    
+    print(f"http://127.0.0.1:{selected_port}")    
     threading.Timer(0.5, lambda: open_browser(selected_port)).start()
     app.run(port=selected_port, use_reloader=False)
